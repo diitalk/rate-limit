@@ -55,6 +55,15 @@ final class PredisRateLimiter implements RateLimiter, SilentRateLimiter
         );
     }
 
+    public function limitExceeded(string $identifier, Rate $rate): bool
+    {
+        $key = $this->key($identifier, $rate->getInterval());
+
+        $current = $this->getCurrent($key);
+
+        return $current >= $rate->getOperations();
+    }
+
     private function key(string $identifier, int $interval): string
     {
         return "{$this->keyPrefix}{$identifier}:$interval";
